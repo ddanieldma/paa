@@ -124,4 +124,131 @@ private:
         }
         return counter >= m_numVertices;
     }
+
+    void cptDijkstraFast(vertex v0, vertex * parent, int * distance){
+        // Vetor que identifica se um vértice foi verificado
+        bool checked[m_numVertices];
+        
+        heap Heap; // Criando heap
+
+        // Inicializando vértices
+        for (vertex=0; v < m_numVertices; v++){
+            parent[v] = -1;
+            distance[v] = INT_MAX;
+            checked[v] = false;
+        }
+
+        // Setando raiz
+        parent[v0] = v0;
+        distance[v0] = 0;
+
+        // Colocando raiz no heap
+        heap.insert_or_update(distance[v0], v0);
+        while(!heap.empty()) {
+            // Pegando e retirando menor elemento da fila de prioridade
+            vertex v1 = heap.top().second;
+            heap.pop();
+
+            // Parando execução do algoritmo se encontrarmos um nó inalcançável a partir da origem v0
+            if(distance[v1] == INT_MAX) { break; }
+            
+            // Percorrendo todas as arestas do vértice em questão
+            EdgeNode * edge = m_edges[v1];
+            while(edge) {
+                vertex v2 = edge->otherVertex();
+                
+                // Se ainda não tivermos checado um vértice na franja
+                if (!checked[v2]){
+                    // Pegando custo dessa aresta
+                    int cost = edge->cost(); //Essa implementação pra DG
+                    // Se a distância por esse caminho for menor que a 
+                    // disrtância que já temos para o vértice...
+                    if (distance[v1] + cost < distance[v2]) {
+                        // ... o pai dele se torna a vértice em que estamos
+                        // (na lista de adj.)...
+                        parent[v2] = v1;
+                        // ...a sua distância é atualizada...
+                        distance[v2] = distance[v1] + cost;
+                        // ...e ele é inserido na fila prioritária.
+                        heap.insert_or_update(distance[v2], v2);
+
+                    }
+                }
+
+                edge = edge->next;
+            }
+        }
+        checked[v1] = true;
+    }
+
+    void initialize(vertex * parent, bool * inTree, int * vertexCost) const{
+        // Inicializando tudo
+        for (vertex v0 = 0; v < m_numVertices; v++){
+            parent[v] = -1;
+            inTree[v] = false;
+            vertexCost[v] = INT_MAX;
+        }
+
+        // Inicializando raiz
+        // Definindo-a como sem pai
+        parent[0] = 0;
+        // Colocando-a na árvore
+        inTree[0] = true;
+
+        // Percorrendo todas as arestas da raiz
+        EdgeNode * edge = m_edges[0];
+        while (edge){
+            vertex v2 = edge->otherVertex();
+
+            // Definindo filhos da raiz
+            parent[v2] = 0;
+            // Colocando custo dos vertices filhos da raiz
+            vertexCost[v2] = edge->cost();
+            
+            edge = edge->next();
+        }
+        
+    }
+    
+    void mstPrimFastV2(vertex * parent) {
+        // Inicialização
+        bool inTree[m_numVertices];
+        int vertexCost[m_numVertices];
+        initialize(parent, inTree, vertexCost);
+
+        // Criação e inicialização do heap
+        Heap heap; 
+        for (vertex v = 1; v < m_numVertices; v++) { heap.insert_or_update(vertexCost[v], v); }
+
+        while (!heap.empty()) {
+            // Pegando e retirando do heap vértice com menor custo
+            vertex v1 = heap.top().second;
+            heap.pop(); 
+
+            // Se o vértice no heap tiver custo infinito ele é inalcançá
+            // vel e encerramos o algoritmo
+            if (vertexCost[v1] == INT_MAX) { break; }
+            
+            // Adicionando na árvore
+            inTree[v1] = true;
+            
+            // Percorrendo toda a lista de arestas
+            EdgeNode * edge = m_edges[v1];
+            while(edge) {
+                vertex v2 = edge->otherVertex();
+                int cost = edge->cost();
+                // Se estivermos analisando um vértice que não está árvore
+                // e cujo custo a partir de v1 é menor que o custo corrente,
+                // atualizamos seu custo, definimos v1 como pai e colocamos
+                // esse custo na fila prioritária
+                if (!inTree[v2] && cost < vertexCost[v2]) {
+                    vertexCost[v2] = cost;
+                    parent[v2] = v1;
+                    heap.insert_or_update(vertexCost[v2], v2);
+                }
+                
+                edge = edge->next();
+            }
+        }
+    }
 };
