@@ -36,9 +36,9 @@ private:
         : m_numVertices(numVertices)
         , m_numEdges(0)
         , m_edges(nullptr) {
-        m_edges = new EdgeNode*[numVertices];
-        for (vertex i=0; i < numVertices; i++) {
-        m_edges[i] = nullptr;
+            m_edges = new EdgeNode*[numVertices];
+            for (vertex i=0; i < numVertices; i++) {
+            m_edges[i] = nullptr;
         }
     }
 
@@ -160,16 +160,17 @@ private:
                 // Se ainda não tivermos checado um vértice na franja
                 if (!checked[v2]){
                     // Pegando custo dessa aresta
-                    int cost = edge->cost(); //Essa implementação pra DG
+                    int cost = edge->cost(); //Essa implementação pra WDG
+                    
                     // Se a distância por esse caminho for menor que a 
-                    // disrtância que já temos para o vértice...
+                    // distância que já temos para o vértice...
                     if (distance[v1] + cost < distance[v2]) {
                         // ... o pai dele se torna a vértice em que estamos
                         // (na lista de adj.)...
                         parent[v2] = v1;
                         // ...a sua distância é atualizada...
                         distance[v2] = distance[v1] + cost;
-                        // ...e ele é inserido na fila prioritária.
+                        // ...e ele é inserido na fila de prioridades.
                         heap.insert_or_update(distance[v2], v2);
 
                     }
