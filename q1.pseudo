@@ -1,8 +1,171 @@
-function criaLista2v1(T, L1) {
-    // Vai armazenar o número de descendentes da cada valor em 1
-    // Cada posição nessa lista tem o número de
-    L2[len(L1)]
+// Questão 1
+
+class UnionFind {
+    constructor(n) {
+        // 
+        // Criando array de pais onde inicialmente cada elemento aponta para
+        // si mesmo (cada um é seu próprio líder)
+        array parent[n]
+        for (set i = 0; i < n; i = i + 1) {
+            parent[i] = i
+        }
+        
+        // Criando um array de níveis para guardar a profundidade das árvores
+        // para união por nível.
+        array rank[n]
+        for (set i = 0; i < n; i = i + 1) {
+            rank[i] = 1
+        }
+    }
+
+    function find(x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]) // Compressão de caminho: todos os elementos apontam para a raiz
+        }
+
+        return parent[x]
+    }
+    
+    function union(x, y) {
+        int rootX = find(x)
+        int rootY = find(y)
+
+        if (rootX != rootY) {
+            if (rank[rootX] > rank[rootY]) { // Se X for maior
+                // Colocamos Y "abaixo" de X, mantendo mesma altura...
+                parent[rootY] = rootX 
+            }
+            else if (rank[rootY] > rank[rootX]) { // ... e vice-versa
+                parent[rootX] = rootY
+            } else { // Senão, aumentamos a árvore
+                parent[rootY] = rootX
+                rank[rootX] = rank[rootX] + 1
+            }
+        }
+    }
 }
 
-// Passos
-// Percorrer l1
+function vertexInList(U, L, v) {
+    // Se x pertence ao mesmo grupo dos itens na lista
+    if U.find(x) == L[0] {
+        return true;
+    }
+
+    return false;
+}
+
+
+// Questão 1.1 - Todos da lista L1 mais os que tiverem número ímpar de 
+// descendentes em L1
+function countDescendants(v, T, L1, U, visited) {
+    int count = 0
+    // Atravessando os filhos de v
+    NodeEdge * edge = T.m_edges[v]
+    while (edge) {
+        int v2 = edge->otherVertex()
+        if (visited[v2]) {
+            // Se v2 já foi contado, continue
+            edge = edge.next
+            continue
+        }
+        visited[v2] = true
+        if (v2 in L1_set) {
+            count += 1
+        }
+        count += countDescendants(T, v2, L1_set, visited)
+        edge = edge.next
+    }
+    return count
+}
+
+function createL2v1(T, L1) {
+    // Função que cria L2 com vértices de T da seguinte forma:
+    // Os vértices estão em L1 ou tem um número ímpar de descendentes em
+    // L2.
+    // 
+    // Entradas:
+    // T = Árvore radicada criada a partir de um grafo G
+    // L1 = Lista com vértices de T
+    // 
+    // Retorno:
+    // L2 = Lista com os vértices de acordo com as restrições
+
+
+    linkedList L2 = L1 // As duas listas começam iguais
+    int n = len(T) // Quantidade de elementos no grafo
+
+    // Cria estrutura union_find pra otimizar verificações
+    unionFind obj_UN = unionFind(n)
+
+    // Pra cada v em T
+    for (v = 0; v < n; v = v + 1){
+        // Se v não estiver em L1
+        if (!vertexInList(obj_UN, L1, v)){
+            // Conta descendentes
+            array visited = boolean[n]
+            visited[v] = true
+            count_desc = countDescendants(v, T, L1, U, visited)
+
+            // Se tiver número ímpar de descendentes adicionamos em v2
+            if (count_desc % 2 == 1) {
+                L2.append(v)
+            }
+        }
+    }
+
+    return L2
+}
+
+
+// Questão 1.2 - Todos da lista L1 mais os que tiverem número ímpar de 
+// ancestrais em L1
+function countAncestors(v, T, L, U) {
+    int count = 0
+
+    // Subindo pela árvore até a raiz (enquanto nao acharmos um vértice
+    // sem pai)
+    while (v != T.parent[v]) {
+        v = T.parent[v]
+        if (vertexInList(U, L, v)){
+            count = count + 1
+        }
+    }
+
+    return count
+}
+
+function createL2v2(T, L1, L2) {
+    // Função que cria L2 com vértices de T da seguinte forma:
+    // Os vértices estão em L1 ou tem um número ímpar de descendentes em
+    // L2.
+    // 
+    // Entradas:
+    // T = Árvore radicada criada a partir de um grafo G
+    // L1 = Lista com vértices de T
+    // 
+    // Retorno:
+    // L2 = Lista com os vértices de acordo com as restrições
+    
+    linkedList L2 = L1 // As duas listas começam iguais
+    int n = len(T) // Quantidade de elementos no grafo
+
+    // Cria estrutura union_find pra otimizar verificação
+    unionFind obj_UN = unionFind(n)
+
+    // Pra cada v em T
+    for (v = 0; v < n; v = v + 1){
+        // Se v não estiver em L2
+        if (!vertexInList(obj_UN, L2, v)){
+            // Conta ancestrais
+            int count_ancestors = countAncestors(v, T, L2, obj_UN)
+
+            // Se tiver número ímpar de ancestrais adicionamos em L2
+            if (count_ancestors % 2 == 1) {
+                L2.append(v)
+            }
+        }
+    }
+
+    return L2
+}
+
