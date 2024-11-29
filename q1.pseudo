@@ -169,3 +169,56 @@ function createL2v2(T, L1, L2) {
     return L2
 }
 
+
+// Questão 2
+// Dado um grafo direcionado fortemente conectado sem pesos e uma lista 
+// L de vértices no grafo, retorne o menor caminho que passe por todos os
+// vértices de L em ordem.
+function caminho_vertices(v1, v2, path_len) {
+    // Array que armazena caminho
+    int path[path_len]
+    // Começando caminho em v1
+    path[0] = v1
+
+    for (int i = 1; i < path_len; i = i + 1) {
+        // Vamos para o pai do último vértice e o colocamos no caminho
+        v1 = parent[v1]
+        path[i] = v1
+    }
+
+    return path
+}
+
+function caminhoMinimoLista(G, L) {
+    // Tamanho da lista
+    int L_len = len(L)
+    // Tamanho do grafo
+    int G_len = len(G)
+    // Lista com caminhos minimos
+    linkedList minimal_path 
+
+    for (int vertex = 0; vertex < L-len - 1; vertex = vertex = 1) {
+        // Definindo começo e fim do caminho
+        int start = L[vertex]
+        int goal = L[vertex + 1]
+        
+        // Criando caminhos a partir do vértice atual
+        int parent[G_len]
+        int distance[G_len]
+        G.bfs_spt(start, parent, distance)
+
+        // Calulando menor caminho para os dois vértices atuais e adici
+        // onando na lista
+        caminho_atual = caminho_vertices(start, goal, distance[goal])
+        minimal_path.append(caminho_atual)
+    }
+
+    return minimal_path
+}
+
+
+// Questão 3
+// Dado um grafo direcionado fortemente conectado com pesos e uma lista L
+// de vértices no grafo, retorne o vértice cuja maior distância de um vértice
+// da lista até ele seja mínima, ou seja, retornar o vértice V de forma 
+// que max{d(L[0], V ), . . . , d(L[N − 1], V )} seja mínimo.
