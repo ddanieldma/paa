@@ -1,5 +1,4 @@
 // Questão 1
-
 class UnionFind {
     constructor(n) {
         // 
@@ -193,7 +192,7 @@ function caminhoMinimoLista(G, L) {
     // Tamanho da lista
     int L_len = len(L)
     // Tamanho do grafo
-    int G_len = len(G)
+    int G.numEdges() = len(G)
     // Lista com caminhos minimos
     linkedList minimal_path 
 
@@ -203,8 +202,8 @@ function caminhoMinimoLista(G, L) {
         int goal = L[vertex + 1]
         
         // Criando caminhos a partir do vértice atual
-        int parent[G_len]
-        int distance[G_len]
+        int parent[G.numEdges()]
+        int distance[G.numEdges()]
         G.bfs_spt(start, parent, distance)
 
         // Calulando menor caminho para os dois vértices atuais e adici
@@ -222,3 +221,195 @@ function caminhoMinimoLista(G, L) {
 // de vértices no grafo, retorne o vértice cuja maior distância de um vértice
 // da lista até ele seja mínima, ou seja, retornar o vértice V de forma 
 // que max{d(L[0], V ), . . . , d(L[N − 1], V )} seja mínimo.
+function removeValues(values, S) {
+    // Função que coloca índices, definidos pela sequência `S`, do vetor `values`
+    // como inválidos (-1)
+    //
+    // Entradas:
+    // values = Vetor com valores
+    // S = Sequência (vetor) com valores para os índices que devem ser 
+    // invalidados
+    // 
+    // Retorno:
+    // values = vetor com os índices definidos em S iguais a -1
+    
+    int S_len = len(S)
+
+    for (int i = 0; i < S_len; i++){
+        values[S[i]] = -1
+    }
+}
+
+function getMax(values) {
+    // Função que encontra o maior dos valores de um vetor `values` e re
+    // torna seu índice
+    //
+    // Entradas:
+    // values = Vetor com valores
+    // 
+    // Retorno:
+    // max_index = Índice do maior valor no vetor
+
+    int max = values[0] // Maior valor
+    int max_idx = 0 // Índice do maior valor
+    int values_len = len(values) // Comprimento do vetor
+
+    // Procurando maior valor
+    for (int i = 1; i < values_len; i++){
+        // Se encontrarmos valor maior que o atual, atualizamos
+        if (values[i] > max) {
+            max = values[i]
+            max_idx = i
+        }
+    }
+
+    return max_idx
+}
+
+function getMin(values) {
+    // Função que encontra o menor dos valores de um vetor `values` e re
+    // torna seu índice
+    //
+    // Entradas:
+    // values = Vetor com valores
+    // 
+    // Retorno:
+    // min_index = Índice do menor valor no vetor
+
+    int min = values[0] // Menor valor
+    int min_idx = 0 // Índice do menor valor
+    int values_len = len(values) // Comprimento do vetor
+
+    // Procurando Menor valor
+    for (int i = 1; i < values_len; i++){
+        // Se encontrarmos valor menor que o atual, atualizamos
+        if (values[i] < min) {
+            min = values[i]
+            min_idx = i
+        }
+    }
+
+    return min_idx
+}
+
+function verticeMinimoMaximos(G, L) {
+    // Vetores para o algoritmo dijkstra
+    int distance[G.numEdges()]
+    int parent[G.numEdges()]
+
+    // Sequência com a maior distãncia da lista para cada vértice
+    int max[G.numEdges()]
+
+    // Para cada vértice do grafo encontramos a maior distãncia da lista
+    for (int vertex = 0; vertex < G.numEdges(); vertex++) {
+        // Calcular distâncias dos vértices da lista
+        dijkstra(vertex, parent, distance)
+
+        // Mantendo apenas vértices de L no vetor de distâncias
+        distance = removeValues(distance, L)
+
+        // Pegando maior distância para o vértice atual
+        max[vertex] = distance[getMax(distance)]
+    }
+
+    // Retornar o menor elemento dessa lista, que será o vértice que pro
+    // curamos
+    return getMin(max)
+}
+
+// Questão 4
+// Dado um grafo direcionado com pesos, um caminho C e um inteiro positivo
+// X, projete um algoritmo que retorne o caminho mais barato C′ com o 
+// mesmo começo e fim de C de forma que a distância de qualquer vértice 
+// em C′ ao seu vértice mais próximo em C não ultrapasse X.
+
+// Dijkstra com múlitplas fontes
+function dijkstraFonts(int fonts[], int parent[], int distance[]){
+    // Vetor que identifica se um vértice foi verificado
+    bool checked[m_numVertices];
+
+    heap Heap; // Criando heap
+
+    // Inicializando vértices
+    for (int vertex = 0; vertex < m_numVertices; vertex++){
+        parent[vertex] = -1;
+        distance[vertex] = INT_MAX;
+        checked[vertex] = false;
+    }
+
+    // Inicializando múltiplas fontes
+    for (int vertex = 0; vertex < len(fonts); vertex++){
+        parent[vertex] = vertex;
+        distance[vertex] = 0;
+        // Colocando fontes no heap
+        heap.insert_or_update(distance[vertex], vertex);
+    }
+    
+    while(!heap.empty()) {
+
+        // Pegando e retirando menor elemento da fila de prioridade
+        vertex v1 = heap.top().second;
+        heap.pop();
+
+        // Parando execução do algoritmo se encontrarmos um nó inalcançável a partir da origem v0
+        if(distance[v1] == INT_MAX) { break; }
+    
+        // Percorrendo todas as arestas do vértice em questão
+        EdgeNode * edge = m_edges[v1];
+        while(edge) {
+            vertex v2 = edge->otherVertex();
+        
+          // Se ainda não tivermos checado um vértice na franja
+            if (!checked[v2]){
+                // Pegando custo dessa aresta
+                int cost = edge->cost(); //Essa implementação pra DG
+                // Se a distância por esse caminho for menor que a 
+                // disrtância que já temos para o vértice...
+                if (distance[v1] + cost < distance[v2]) {
+                    // ... o pai dele se torna a vértice em que estamos
+                    // (na lista de adj.)...
+                    parent[v2] = v1;
+                    // ...a sua distância é atualizada...
+                    distance[v2] = distance[v1] + cost;
+                    // ...e ele é inserido na fila prioritária.
+                    heap.insert_or_update(distance[v2], v2);
+
+                }
+            }
+
+            edge = edge->next;
+        }
+    }
+    
+    checked[v1] = true;
+}
+
+function caminhoMaisBaratoComRestricao(G, C, X) {
+    // Calculamos a distância de todos os vértices até o caminho inicial
+    // C...
+    int distance[G.numEdges()]
+    int parent[G.numEdges()]
+    G.dijkstraFonts(C, parent, distance) //TODO: Apenas alterar algoritmo de dijsktra para permitir várias fontes
+    // ...e os removemos, removendo todas as suas arestas.
+    for (int vertex = 0; vertex < G.numEdges(); vertex++){
+        if distance[vertex] > X{
+            NodeEdge * edge = m_edges[vertex]
+
+            while (edge) {
+                v_1 = edge.otherVertex()
+                G.removeEdge(vertex, v1)
+                edge = edge.next()
+            }
+        }
+    }
+
+    // Recalculando caminho com o novo grafo sem os vértice "inválidos".
+    G.dijkstra(C[0], parent, distance)
+
+    int start = C[0]
+    int end = C[len(C)]
+
+    return caminho_vertices(start, end, distance[end]) //TODO: criar outra versão da função para grafos ponderados
+}
+
+// Questão 5
