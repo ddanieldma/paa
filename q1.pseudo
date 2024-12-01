@@ -370,35 +370,40 @@ function verticeMinimoMaximos(G, L) {
 // mesmo começo e fim de C de forma que a distância de qualquer vértice 
 // em C′ ao seu vértice mais próximo em C não ultrapasse X.
 
-// Dijkstra com múlitplas fontes
+// Função que roda algoritmo de Dijkstra com múltiplos vértices como fontes
+// definidos no vetor `fonts`. Utiliza os vetores `parent` e `distance`
+// de forma análoga ao dijkstra "padrão". Esta função deve ser implementada
+// dentro de uma classe de lista de adjacências para representação de grafos
 function dijkstraFonts(int fonts[], int parent[], int distance[]){
     // Vetor que identifica se um vértice foi verificado
-    bool checked[m_numVertices];
+    bool checked[numVertices];
 
     heap Heap; // Criando heap
 
     // Inicializando vértices
-    for (int vertex = 0; vertex < m_numVertices; vertex++){
+    for (int vertex = 0; vertex < numVertices; vertex += 1){
         parent[vertex] = -1;
         distance[vertex] = INT_MAX;
         checked[vertex] = false;
     }
 
     // Inicializando múltiplas fontes
-    for (int vertex = 0; vertex < len(fonts); vertex++){
+    for (int vertex = 0; vertex < len(fonts); vertex += 1){
         parent[vertex] = vertex;
         distance[vertex] = 0;
+        
         // Colocando fontes no heap
-        heap.insert_or_update(distance[vertex], vertex);
+        heap.insertOrUpdate(distance[vertex], vertex);
     }
     
+    // Enquanto o heap não estiver vazio
     while(!heap.empty()) {
-
         // Pegando e retirando menor elemento da fila de prioridade
         vertex v1 = heap.top().second;
         heap.pop();
 
-        // Parando execução do algoritmo se encontrarmos um nó inalcançável a partir da origem v0
+        // Parando execução do algoritmo se encontrarmos um nó inalcançável
+        // a partir da origem v0
         if(distance[v1] == INT_MAX) { break; }
     
         // Percorrendo todas as arestas do vértice em questão
@@ -406,12 +411,13 @@ function dijkstraFonts(int fonts[], int parent[], int distance[]){
         while(edge) {
             vertex v2 = edge->otherVertex();
         
-          // Se ainda não tivermos checado um vértice na franja
+            // Se ainda não tivermos checado um vértice na franja
             if (!checked[v2]){
                 // Pegando custo dessa aresta
                 int cost = edge->cost(); //Essa implementação pra DG
+                
                 // Se a distância por esse caminho for menor que a 
-                // disrtância que já temos para o vértice...
+                // distância que já temos para o vértice...
                 if (distance[v1] + cost < distance[v2]) {
                     // ... o pai dele se torna a vértice em que estamos
                     // (na lista de adj.)...
@@ -419,7 +425,7 @@ function dijkstraFonts(int fonts[], int parent[], int distance[]){
                     // ...a sua distância é atualizada...
                     distance[v2] = distance[v1] + cost;
                     // ...e ele é inserido na fila prioritária.
-                    heap.insert_or_update(distance[v2], v2);
+                    heap.insertOrUpdate(distance[v2], v2);
 
                 }
             }
@@ -432,31 +438,46 @@ function dijkstraFonts(int fonts[], int parent[], int distance[]){
 }
 
 function caminhoMaisBaratoComRestricao(G, C, X) {
+    // Função que, dados grafo direcionado com pesos `G`, um caminho `C` 
+    // em `G` e um valor `X`, calcula um novo caminho mais barato C' com
+    // mesmo começo e fim de C e com vértices cuja distância até o caminho
+    // original não ultrapasse `X`
+    // 
+    // Entradas:
+    // G = Grafo direcionado fortemente conectado
+    // C = Caminho em `G`
+    // X = Restrição de distância até `C`
+    // 
+    // Retorno: Novo caminho que atende às restrições
+    
     // Calculamos a distância de todos os vértices até o caminho inicial
     // C...
     int distance[G.numEdges()]
     int parent[G.numEdges()]
-    G.dijkstraFonts(C, parent, distance) //TODO: Apenas alterar algoritmo de dijsktra para permitir várias fontes
+    G.dijkstraFonts(C, parent, distance)
+    
     // ...e os removemos, removendo todas as suas arestas.
-    for (int vertex = 0; vertex < G.numEdges(); vertex++){
-        if distance[vertex] > X{
-            NodeEdge * edge = m_edges[vertex]
-
+    // Para cada vértice no grafo
+    for (int v_i = 0; v_i < G.numEdges(); v_i += 1){
+        // Se sua distância não obedecer a restrição
+        if distance[v_i] > X{
+            // Removemos todas as as suas arestas
+            NodeEdge * edge = m_edges[v_i]
             while (edge) {
                 v_1 = edge.otherVertex()
-                G.removeEdge(vertex, v1)
+                G.removeEdge(v_i, v1)
                 edge = edge.next()
             }
         }
     }
 
-    // Recalculando caminho com o novo grafo sem os vértice "inválidos".
+    // Recalculando caminho com o novo grafo sem os vértices "inválidos".
     G.dijkstra(C[0], parent, distance)
 
     int start = C[0]
-    int end = C[len(C)]
+    int goal = C[len(C)]
 
-    return caminho_vertices(start, end, distance[end]) //TODO: criar outra versão da função para grafos ponderados
+    return caminhoVertices(start, goal, distance[goal])
 }
 
 // Questão 5
