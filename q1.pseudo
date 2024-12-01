@@ -90,7 +90,7 @@ function createL2v1(T, L1) {
     // L2 = Lista com os vértices de acordo com as restrições
 
 
-    linkedList L2 = L1 // As duas listas começam iguais
+    LinkedList L2 = L1 // As duas listas começam iguais
     int n = len(T) // Quantidade de elementos no grafo
 
     // Cria estrutura union_find pra otimizar verificações
@@ -145,7 +145,7 @@ function createL2v2(T, L1, L2) {
     // Retorno:
     // L2 = Lista com os vértices de acordo com as restrições
     
-    linkedList L2 = L1 // As duas listas começam iguais
+    LinkedList L2 = L1 // As duas listas começam iguais
     int n = len(T) // Quantidade de elementos no grafo
 
     // Cria estrutura union_find pra otimizar verificação
@@ -194,7 +194,7 @@ function caminhoMinimoLista(G, L) {
     // Tamanho do grafo
     int G.numEdges() = len(G)
     // Lista com caminhos minimos
-    linkedList minimal_path 
+    LinkedList minimal_path 
 
     for (int vertex = 0; vertex < L-len - 1; vertex = vertex = 1) {
         // Definindo começo e fim do caminho
@@ -355,7 +355,7 @@ function dijkstraFonts(int fonts[], int parent[], int distance[]){
         if(distance[v1] == INT_MAX) { break; }
     
         // Percorrendo todas as arestas do vértice em questão
-        EdgeNode * edge = m_edges[v1];
+        EdgeNode edge = m_edges[v1];
         while(edge) {
             vertex v2 = edge->otherVertex();
         
@@ -413,3 +413,130 @@ function caminhoMaisBaratoComRestricao(G, C, X) {
 }
 
 // Questão 5
+// Dado um grafo não direcionado conexo com pesos, retorna a aresta cuja remoção
+// causaria o maior aumento no custo da árvore geradora mínima
+function adicionaGrafoUN(U, G) {
+    for (int vertex = 1; vertex < G.numEdges; vertex++) {
+        U.union(vertex - 1, vertex)
+    }
+}
+
+function removeEdgeAndFindSubgraphs(graph, v_i, v_j) {
+    // Removendo a aresta
+    graph.removeEdge(v_i, v_j)
+    
+    // Encontrando os dois subgrafos
+    adjList subgraph_1 = graph.bfs(v_i)
+    adjList subgraph_2 = graph.bfs(v_j)
+
+    // Recolocando a aresta
+    graph.addEdge(v_i, v_j)
+    
+    // Retornando vetor com os dois subgrafos
+    adjList subgraphs = {subgraph_1, subgraph_2}
+    return subgraphs
+}
+
+function findMinEdgeBetweenSubgraphs(graph, subgraph_1, subgraph_2) {
+    // Colocando os dois subgrafos em estrutura union-find
+    // Criand estrutura union-find
+    UnionFind obj_UN = UnionFind(len(subgraph_1)) + len(subgraph_2)
+    // Adicionando vértices dos grafos
+    adicionaGrafoUN(obj_UN, subgraph_1)
+    adicionaGrafoUN(obj_UN, subgraph_2)
+
+    // Lista encadeada para armazenar arestas que pertencem ao corte
+    LinkedList validEdges
+
+    // Iterando sobre vértices do grafo original
+    for (int v_i = 1; v_i < G.numEdges; v_i++) {
+        // Pegando arestas de v_i
+        EdgeNode edge = G.m_edges[v_i]
+        
+        // Iterando sobre arestas de v_i
+        while (edge) {
+            // Pegando outro vértice v_j
+            v_j = edge.otherVertex()
+            
+            // Se os dois vértices estiverem em subgrafos diferentes
+            if obj_UN.find(v_i) != obj_UN.find(v_j) {
+                // Criando array com dois vértices e custo da aresta para
+                // representar aresta única
+                int onlyEdge = {v_i, v_j, edge.cost()}
+                // Colocando na lista
+                validEdges.append(onlyEdge)
+            }
+
+            // Próxima aresta
+            edge = edge.next()
+        }
+    }
+
+    // Encontrando menor das arestas
+    // Pegando começo da lista
+    LinkedListNode edge = validEdges.head()
+
+    // Definindo custo mais barato e sua respectiva aresta como primeiro
+    // elemento da lista
+    int cheapestCost = edge.value[2]
+    int cheapestEdge = {edge.value[0]. edge.value[1]}
+    
+    // Indo para o segundo elemento da lista
+    edge = edge.next()
+    
+    // Percorrendo a lista
+    while (edge) {
+        // Se encontrarmos uma aresta mais barato atualizamos variáveis
+        if (edge.cost() > cheapestCost) {
+            int cheapestCost = edge.value[2]
+            int cheapestEdge = {edge.value[0]. edge.value[1]}
+        }
+
+        // Próxima aresta
+        edge = edge.next()
+    }
+
+    return cheapestEdge
+}
+
+function max_costIncrease(graph, mst) {
+    int maxIncrease = 0 // Maior diferença
+    int maxEdge = {0, 0, 0} // Aresta que causou maior diferença
+    
+    // Pra cada vértice na MST
+    for (int v_i = 0; v_i < G.numEdges(); v_i++){
+        // Pegando arestas de v_i
+        EdgeNode edge = mst.m_edges[v_i]
+        
+        while (edge) {
+            // Pegando o outro vértice v_j
+            v_j = edge.otherVertex()
+
+            // Peso da aresta atual
+            int currentWeight = edge.cost()
+
+            // Calculando diferença de custo com a retirada da aresta.
+            // Removendo a aresta (v_i, v_j) de T e encontrando subgrafos gerados
+            adjList subgraphs = removeEdgeAndFindSubgraphs(mst, v_i, v_j)
+            // Removendo a aresta também do grafo original
+            graph.removeEdge(v_i, v_j)
+            // Encontrando a aresta mínima entre os dois subgrafos
+            int minEdge[3] = findMinEdgeBetweenSubgraphs(graph, subgraphs[0], subgraphs[1])
+            // Recolocando aresta no grafo original
+            graph.addEdge(v_i, v_j)
+            // Calculando a diferença de custo...
+            int costIncrease = minEdge[2] - currentWeight
+            // ... e fazendo atualizações caso a diferença seja menor
+            if (costIncrease > max_increase){
+                maxIncrease = costIncrease
+                maxEdge = minEdge
+            }
+            
+            // Próxima aresta
+            edge = edge.next()
+        }
+    }
+
+    // Retornando aresta que causou maior aumento no custo
+    return maxEdge
+}
