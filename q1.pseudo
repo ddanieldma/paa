@@ -259,6 +259,7 @@ function caminhoMinimoLista(G, L) {
 // de vértices no grafo, retorne o vértice cuja maior distância de um vértice
 // da lista até ele seja mínima, ou seja, retornar o vértice V de forma 
 // que max{d(L[0], V ), . . . , d(L[N − 1], V )} seja mínimo.
+
 function removeValues(values, S) {
     // Função que coloca índices, definidos pela sequência `S`, do vetor `values`
     // como inválidos (-1)
@@ -267,13 +268,8 @@ function removeValues(values, S) {
     // values = Vetor com valores
     // S = Sequência (vetor) com valores para os índices que devem ser 
     // invalidados
-    // 
-    // Retorno:
-    // values = vetor com os índices definidos em S iguais a -1
     
-    int S_len = len(S)
-
-    for (int i = 0; i < S_len; i++){
+    for (int i = 0; i < len(S); i += 1){
         values[S[i]] = -1
     }
 }
@@ -288,20 +284,21 @@ function getMax(values) {
     // Retorno:
     // max_index = Índice do maior valor no vetor
 
-    int max = values[0] // Maior valor
-    int max_idx = 0 // Índice do maior valor
-    int values_len = len(values) // Comprimento do vetor
+    // Definindo maior valor como primeiro da lista
+    int max = values[0]
+    int maxIdx = 0 // Índice do maior valor
 
-    // Procurando maior valor
-    for (int i = 1; i < values_len; i++){
-        // Se encontrarmos valor maior que o atual, atualizamos
+    // Procurando maior valor pelo resto da lista
+    for (int i = 1; i < len(values); i += 1){
+        // Se encontrarmos valor maior que o atual, atualizamos as variáveis
         if (values[i] > max) {
             max = values[i]
-            max_idx = i
+            maxIdx = i
         }
     }
 
-    return max_idx
+    // Retornando índice do maior valor
+    return maxIdx
 }
 
 function getMin(values) {
@@ -314,23 +311,35 @@ function getMin(values) {
     // Retorno:
     // min_index = Índice do menor valor no vetor
 
-    int min = values[0] // Menor valor
-    int min_idx = 0 // Índice do menor valor
-    int values_len = len(values) // Comprimento do vetor
+    // Definindo maior valor como primeiro da lista
+    int min = values[0]
+    int minIdx = 0 // Índice do menor valor
 
     // Procurando Menor valor
-    for (int i = 1; i < values_len; i++){
-        // Se encontrarmos valor menor que o atual, atualizamos
+    for (int i = 1; i < len(values); i += 1){
+        // Se encontrarmos valor menor que o atual, atualizamos as variáveis
         if (values[i] < min) {
             min = values[i]
-            min_idx = i
+            minIdx = i
         }
     }
 
-    return min_idx
+    // Retornando índice do menor valor
+    return minIdx
 }
 
 function verticeMinimoMaximos(G, L) {
+    // Função que encontra vértice V  de um grafo dado `G` de forma que 
+    // max{d(L[0], V ), . . . , d(L[N − 1], V)} seja mínimo, sendo `L`
+    // uma lista de vértices dada
+    // 
+    // Entradas:
+    // G = Grafo direcionado fortemente conectado com pesos
+    // L = Lista de vértices
+    // 
+    // Retorno: Vértice que satisfaz min{max{d(L[0], V_i), . . . , d(L[N − 1], V_i)}}
+    // sendo V_i contido nos vértices de G
+    
     // Vetores para o algoritmo dijkstra
     int distance[G.numEdges()]
     int parent[G.numEdges()]
@@ -339,15 +348,15 @@ function verticeMinimoMaximos(G, L) {
     int max[G.numEdges()]
 
     // Para cada vértice do grafo encontramos a maior distãncia da lista
-    for (int vertex = 0; vertex < G.numEdges(); vertex++) {
-        // Calcular distâncias dos vértices da lista
-        dijkstra(vertex, parent, distance)
+    for (int v_i = 0; v_i < G.numEdges(); v_i += 1) {
+        // Calcular distância de v_i para os outros vértices
+        dijkstra(v_i, parent, distance)
 
-        // Mantendo apenas vértices de L no vetor de distâncias
+        // Mantendo apenas vértices que pertencem a L no vetor de distâncias
         distance = removeValues(distance, L)
 
-        // Pegando maior distância para o vértice atual
-        max[vertex] = distance[getMax(distance)]
+        // Pegando maior distância para o vértice v_i atual
+        max[v_i] = distance[getMax(distance)]
     }
 
     // Retornar o menor elemento dessa lista, que será o vértice que pro
