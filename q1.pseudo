@@ -1,4 +1,10 @@
-// Questão 1
+// == Questão 1 ==
+// Dado um grafo G = (V, E), uma árvore radicada T de G produzida por uma
+// varredura, uma lista L1 contendo vértices dessa árvore, escreva três
+// algoritmos que retornem uma lista L2 contendo vértices de forma que 
+// um vértice está nessa lista se e somente se ele está em L1 ou:
+
+// Estrutura de dados union-find
 class UnionFind {
     constructor(n) {
         // 
@@ -44,32 +50,43 @@ class UnionFind {
     }
 }
 
-function vertexInList(U, L, v) {
-    // Se x pertence ao mesmo grupo dos itens na lista
-    if U.find(x) == L[0] {
-        return true;
-    }
-
-    return false;
+// Função que verifica se um determinado elemento `x` pertence à lista
+// `L`, utilizando objeto union-find `U` para otimizar verificação. Os con
+// junto definido pela lista tem como representante o primeiro elemento 
+// da lista
+function elementInList(U, L, x) {
+    // Se x pertence ao mesmo grupo dos itens na lista verdadeiro. Caso
+    // contrário, falso
+    U.find(x) == L[0] ? return true : return false // Operador ternário
 }
 
 
-// Questão 1.1 - Todos da lista L1 mais os que tiverem número ímpar de 
-// descendentes em L1
+// ==== Questão 1.1 - Possui um número ímpar de descendentes em L2. ====
+
+// Função que conta descendentes vértices de `T`, descendentes de `v`, que 
+// pertencem a `L1`, utilizando objeto union-find `U` e vetor `visited` para 
+// maior eficiência
 function countDescendants(v, T, L1, U, visited) {
+    // Contagem de descendentes
     int count = 0
-    // Atravessando os filhos de v
+
+    // Percorrendo os filhos de v
     NodeEdge * edge = T.m_edges[v]
     while (edge) {
+        // Pegando filho de v, v_2
         int v2 = edge->otherVertex()
+        
+        // Se v_2 já foi contado, continue
         if (visited[v2]) {
-            // Se v2 já foi contado, continue
             edge = edge.next
             continue
         }
+
+        // Se não, dizemos que foi contado
         visited[v2] = true
-        if (v2 in L1_set) {
-            count += 1
+        // E se estiver na lista incrementamos a contagem
+        if (elementInList(U, L, v)) {
+            count = count + 1
         }
         count += countDescendants(T, v2, L1_set, visited)
         edge = edge.next
@@ -90,24 +107,28 @@ function createL2v1(T, L1) {
     // L2 = Lista com os vértices de acordo com as restrições
 
 
-    LinkedList L2 = L1 // As duas listas começam iguais
-    int n = len(T) // Quantidade de elementos no grafo
+    // As duas listas começam iguais
+    LinkedList L2
+    L2.copyList(L1)
+
+    // Quantidade de elementos no grafo
+    int n = len(T)
 
     // Cria estrutura union_find pra otimizar verificações
-    unionFind obj_UN = unionFind(n)
+    unionFind obj_UN = unionFind(T.numEdges())
 
-    // Pra cada v em T
-    for (v = 0; v < n; v = v + 1){
-        // Se v não estiver em L1
-        if (!vertexInList(obj_UN, L1, v)){
-            // Conta descendentes
-            array visited = boolean[n]
-            visited[v] = true
-            count_desc = countDescendants(v, T, L1, U, visited)
+    // Pra cada vértice v_i em T
+    for (v_i = 0; v_i < n; v_i++){
+        // Se v_i não estiver em L1
+        if (!elementInList(obj_UN, L1, v_i)){
+            // Contamos seus descendentes
+            array visited = boolean[T.numEdges()]
+            visited[v_i] = true
+            numDescendants = countDescendants(v_i, T, L1, U, visited)
 
             // Se tiver número ímpar de descendentes adicionamos em v2
-            if (count_desc % 2 == 1) {
-                L2.append(v)
+            if (numDescendants % 2 == 1) {
+                L2.append(v_i)
             }
         }
     }
