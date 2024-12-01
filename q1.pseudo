@@ -198,13 +198,19 @@ function createL2v2(T, L1, L2) {
 // Dado um grafo direcionado fortemente conectado sem pesos e uma lista 
 // L de vértices no grafo, retorne o menor caminho que passe por todos os
 // vértices de L em ordem.
-function caminho_vertices(v1, v2, path_len) {
+
+// Função que, dados dois vértices `v_1` e `v_2` e o comprimento `pathLen`
+// do caminho entre eles, retorna vetor com sequência de vértices que 
+// define o caminho C começado em `v_1` e terminado em `v_2`
+function caminhoVertices(v1, v2, pathLen) {
     // Array que armazena caminho
-    int path[path_len]
+    int path[pathLen]
+    
     // Começando caminho em v1
     path[0] = v1
 
-    for (int i = 1; i < path_len; i = i + 1) {
+    // Preenchendo caminho
+    for (int i = 1; i < pathLen; i += 1) {
         // Vamos para o pai do último vértice e o colocamos no caminho
         v1 = parent[v1]
         path[i] = v1
@@ -214,14 +220,21 @@ function caminho_vertices(v1, v2, path_len) {
 }
 
 function caminhoMinimoLista(G, L) {
-    // Tamanho da lista
-    int L_len = len(L)
-    // Tamanho do grafo
-    int G.numEdges() = len(G)
+    // Função que cria menor caminho que passa por todos os vértices de L
+    // em ordem.
+    // 
+    // Entradas:
+    // G = Grafo direcionado fortemente conectado
+    // L = Lista de vértices
+    // 
+    // Retorno:
+    // minimalPath = Menor caminho que passe por todos os vértices de L
+    
     // Lista com caminhos minimos
-    LinkedList minimal_path 
+    LinkedList minimalPath 
 
-    for (int vertex = 0; vertex < L-len - 1; vertex = vertex = 1) {
+    // Para
+    for (int vertex = 0; vertex < G.numEdges() - 1; vertex += 1) {
         // Definindo começo e fim do caminho
         int start = L[vertex]
         int goal = L[vertex + 1]
@@ -229,15 +242,15 @@ function caminhoMinimoLista(G, L) {
         // Criando caminhos a partir do vértice atual
         int parent[G.numEdges()]
         int distance[G.numEdges()]
-        G.bfs_spt(start, parent, distance)
+        G.bfs(start, parent, distance)
 
-        // Calulando menor caminho para os dois vértices atuais e adici
+        // Calculando menor caminho para os dois vértices atuais e adici
         // onando na lista
-        caminho_atual = caminho_vertices(start, goal, distance[goal])
-        minimal_path.append(caminho_atual)
+        currentPath = caminhoVertices(start, goal, distance[goal])
+        minimalPath.append(currentPath)
     }
 
-    return minimal_path
+    return minimalPath
 }
 
 
