@@ -1,9 +1,3 @@
-// == Questão 1 ==
-// Dado um grafo G = (V, E), uma árvore radicada T de G produzida por uma
-// varredura, uma lista L1 contendo vértices dessa árvore, escreva três
-// algoritmos que retornem uma lista L2 contendo vértices de forma que 
-// um vértice está nessa lista se e somente se ele está em L1 ou:
-
 // Estrutura de dados union-find
 class UnionFind {
     constructor(n) {
@@ -50,6 +44,17 @@ class UnionFind {
     }
 }
 
+// Função que adiciona elementos da lista `L` à estrutura union-find `U`
+// dada, todos em um mesmo grupo.
+function addListToUN(U, L) {
+    // Para cada v_i da lista
+    for (int v_i = 1; v_i < len(L); v_i += 1) {
+        // o juntamos com o grupo contendo todos os vértices que o antece
+        // dem na lista
+        U.union(v_i - 1, v_i)
+    }
+}
+
 // Função que verifica se um determinado elemento `x` pertence à lista
 // `L`, utilizando objeto union-find `U` para otimizar verificação. Os con
 // junto definido pela lista tem como representante o primeiro elemento 
@@ -60,8 +65,12 @@ function elementInList(U, L, x) {
     U.find(x) == L[0] ? return true : return false // Operador ternário
 }
 
-
-// ==== Questão 1.1 - Possui um número ímpar de descendentes em L2. ====
+// == Questão 1 == TODO: verificar também os elementos que já foram adicionados na lista
+// Dado um grafo G = (V, E), uma árvore radicada T de G produzida por uma
+// varredura, uma lista L1 contendo vértices dessa árvore, escreva três
+// algoritmos que retornem uma lista L2 contendo vértices de forma que 
+// um vértice está nessa lista se e somente se ele está em L1 ou:
+// ==== Questão 1.1 - Possui um número ímpar de descendentes em L2.
 
 // Função que conta vértices de `T`, descendentes de `v`, que 
 // pertencem a `L`, utilizando objeto union-find `U` e vetor `visited` para 
@@ -138,8 +147,7 @@ function createL2v1(T, L1) {
 }
 
 
-// ==== Questão 1.2 - Todos da lista L1 mais os que tiverem número ímpar de ====  
-// ancestrais em L1
+// ==== Questão 1.2 - Possui um número ímpar de ancestrais em L2.
 
 // Função que conta vértices de `T`, ancestrais de `v`, que 
 // pertencem a `L`, utilizando objeto union-find `U` para maior eficiência
@@ -193,6 +201,85 @@ function createL2v2(T, L1, L2) {
     return L2
 }
 
+// ==== Questão 1.3 - Possui um número ímpar de primos mais velhos em L2.
+// Função que retorna a raiz de uma árvore radiacada `T` dada.
+function getRootOfTree(T) {
+    for (int v_i = 0; v_i < T.numEdges; v += 1) {
+        // Se o pai de v_i for ele mesmo, temos a raiz
+        if (T.parent[v_i] == v_i) {
+            return v_i
+        }
+    }
+}
+
+// Função que recebe um vetor `preOrder` produzido pela execução de um 
+// algoritmo DFS, um vértice `v` e uma lista `L` e retorna a contagem de
+// primos mais velhos de `v` na lista
+function countOlderCousins(preOrder, v_i, L) {
+    // Contador de primos
+    int count = 0
+    
+    // Para cada v_j em L
+    // TODO: mudar para lista encadeada
+    for (int v_j = 0; v_j < len(L); v_j += 1) {
+        // Primo v_j mais velho de v_i se: preOrder[v_j] > preOrder[v_i]
+        if preOrder[v_j] > preOrder[v_i] {
+            count += 1
+        }
+    }
+
+    return count
+}
+
+function createL2v3(T, L1) {
+    // Função que cria L2 com vértices de T da seguinte forma:
+    // Os vértices estão em L1 ou tem um número ímpar de primos mais 
+    // velhos em L2.
+    // 
+    // Entradas:
+    // T = Árvore radicada criada a partir de um grafo G
+    // L1 = Lista com vértices de T
+    // 
+    // Retorno:
+    // L2 = Lista com os vértices de acordo com as restrições
+
+    // As duas listas começam iguais
+    LinkedList L2
+    L2.copyList(L1)
+
+    // Criando e preenchendo estrutura union-find para otimizar operações
+    // de verificação de pertencimento
+    UnionFind obj_UN = UnionFind(T.numEdges)
+    addListToUN(obj_UN, L1)
+
+    // Calculando DFS do grafo começando pela mesma raiz da árvore radicada
+    // Encontrando raiz da árvore
+    int root = getRootOfTree(T)
+    // Calculando DFS
+    int preOrder[T.numEdges]
+    T.dfs(preOrder)
+
+    // Para cada v_i na árvore
+    for (int v_i = 0; v_i < T.numEdges; v_i += 1) {
+        // Se v_i já estiver na lista, o ignoramos
+        if(elementInList(obj_UN, L1, v_i)){
+            continue
+        }
+
+        // Contando primos mais velhos em L2
+        countOlderCousins(preOrder, v_i, L2)
+
+        // Se tivemros número ímpar adicionamos em L2
+        if (countOlderCousins % 2 == 1) {
+            L2.append(v_i)
+            
+            // E o colocamos como pertencente à lista
+            U.union(L[0], v_i)
+        }
+    }
+
+    return L2
+}
 
 // Questão 2
 // Dado um grafo direcionado fortemente conectado sem pesos e uma lista 
