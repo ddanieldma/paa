@@ -7,7 +7,6 @@
 // Estrutura de dados union-find
 class UnionFind {
     constructor(n) {
-        // 
         // Criando array de pais onde inicialmente cada elemento aponta para
         // si mesmo (cada um é seu próprio líder)
         array parent[n]
@@ -25,7 +24,8 @@ class UnionFind {
 
     function find(x) {
         if (parent[x] != x) {
-            parent[x] = find(parent[x]) // Compressão de caminho: todos os elementos apontam para a raiz
+            // Compressão de caminho: todos os elementos apontam para a raiz
+            parent[x] = find(parent[x])
         }
 
         return parent[x]
@@ -138,7 +138,7 @@ function createL2v1(T, L1) {
 }
 
 
-// Questão 1.2 - Todos da lista L1 mais os que tiverem número ímpar de 
+// ==== Questão 1.2 - Todos da lista L1 mais os que tiverem número ímpar de ====  
 // ancestrais em L1
 
 // Função que conta vértices de `T`, ancestrais de `v`, que 
