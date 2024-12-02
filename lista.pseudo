@@ -213,19 +213,21 @@ function getRootOfTree(T) {
 }
 
 // Função que recebe um vetor `preOrder` produzido pela execução de um 
-// algoritmo DFS, um vértice `v` e uma lista `L` e retorna a contagem de
+// algoritmo DFS, um vértice `v` e uma lista encadeada `L` e retorna a contagem de
 // primos mais velhos de `v` na lista
 function countOlderCousins(preOrder, v_i, L) {
     // Contador de primos
     int count = 0
     
+    LinkedListNode v_i = L.head()
+
     // Para cada v_j em L
-    // TODO: mudar para lista encadeada
-    for (int v_j = 0; v_j < len(L); v_j += 1) {
-        // Primo v_j mais velho de v_i se: preOrder[v_j] > preOrder[v_i]
+    while (v_i) {
         if preOrder[v_j] > preOrder[v_i] {
             count += 1
         }
+        
+        v_i = v_i.next()
     }
 
     return count
@@ -255,9 +257,9 @@ function createL2v3(T, L1) {
     // Calculando DFS do grafo começando pela mesma raiz da árvore radicada
     // Encontrando raiz da árvore
     int root = getRootOfTree(T)
-    // Calculando DFS
+    // Calculando DFS começando pela mesma raiz
     int preOrder[T.numEdges]
-    T.dfs(preOrder)
+    T.dfs(root, preOrder)
 
     // Para cada v_i na árvore
     for (int v_i = 0; v_i < T.numEdges; v_i += 1) {
@@ -272,9 +274,6 @@ function createL2v3(T, L1) {
         // Se tivemros número ímpar adicionamos em L2
         if (countOlderCousins % 2 == 1) {
             L2.append(v_i)
-            
-            // E o colocamos como pertencente à lista
-            U.union(L[0], v_i)
         }
     }
 
