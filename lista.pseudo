@@ -4,14 +4,14 @@ class UnionFind {
         // Criando array de pais onde inicialmente cada elemento aponta para
         // si mesmo (cada um é seu próprio líder)
         array parent[n]
-        for (set i = 0; i < n; i = i + 1) {
+        for (int i = 0; i < n; i += 1) {
             parent[i] = i
         }
         
         // Criando um array de níveis para guardar a profundidade das árvores
         // para união por nível.
         array rank[n]
-        for (set i = 0; i < n; i = i + 1) {
+        for (int i = 0; i < n; i += 1) {
             rank[i] = 1
         }
     }
@@ -206,6 +206,7 @@ function createL2v2(T, L1, L2) {
 }
 
 // ==== Questão 1.3 - Possui um número ímpar de primos mais velhos em L2.
+
 // Função que retorna a raiz de uma árvore radiacada `T` dada.
 function getRootOfTree(T) {
     for (int v_i = 0; v_i < T.numEdges; v += 1) {
@@ -284,7 +285,7 @@ function createL2v3(T, L1) {
     return L2
 }
 
-// Questão 2
+// == Questão 2 ==
 // Dado um grafo direcionado fortemente conectado sem pesos e uma lista 
 // L de vértices no grafo, retorne o menor caminho que passe por todos os
 // vértices de L em ordem.
