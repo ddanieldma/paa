@@ -36,7 +36,7 @@ class UnionFind {
             }
             else if (rank[rootY] > rank[rootX]) { // ... e vice-versa
                 parent[rootX] = rootY
-            } else { // Senão, aumentamos a árvore
+            } else { // Senão, caso ambas sejam iguais aumentamos a árvore
                 parent[rootY] = rootX
                 rank[rootX] = rank[rootX] + 1
             }
@@ -62,7 +62,7 @@ function addListToUN(U, L) {
 function elementInList(U, L, x) {
     // Se x pertence ao mesmo grupo dos itens na lista verdadeiro. Caso
     // contrário, falso
-    U.find(x) == L[0] ? return true : return false // Operador ternário
+    U.find(x) == L[0]
 }
 
 // == Questão 1 == TODO: verificar também os elementos que já foram adicionados na lista
@@ -78,26 +78,28 @@ function elementInList(U, L, x) {
 function countDescendants(v, T, L, U, visited) {
     // Contagem de descendentes
     int count = 0
-
     // Percorrendo os filhos de v
     NodeEdge * edge = T.m_edges[v]
+
     while (edge) {
         // Pegando filho de v, v_2
         int v2 = edge->otherVertex()
         
-        // Se v_2 já foi contado, continue
-        if (visited[v2]) {
-            edge = edge.next
-            continue
+        // Se ainda não tivermos visitado v2
+        if(!visited[v2]) {
+            // Agora dizemos que foi visitado
+            visited[v2] = true
+
+            // E se estiver na lista 
+            if (elementInList(U, L, v2)) {
+                // Incrementamos a contagem de descendentes
+                count += 1
+            }
+
+            // Recursão para contar descendentes dos descendentes
+            count += countDescendants(v2, T, L, U, visited)
         }
 
-        // Se não, dizemos que foi contado
-        visited[v2] = true
-        // E se estiver na lista incrementamos a contagem
-        if (elementInList(U, L, v)) {
-            count += 1
-        }
-        count += countDescendantsv(v2, T, L, U, visited)
         edge = edge.next
     }
     
@@ -121,22 +123,26 @@ function createL2v1(T, L1) {
     LinkedList L2
     L2.copyList(L1)
 
-    // Quantidade de elementos no grafo
-    int n = len(T)
-
     // Cria estrutura union_find pra otimizar verificações
     unionFind obj_UN = unionFind(T.numEdges())
     // E coloca todos os elementos da lista no mesmo grupo
     addListToUN(obj_UN, L1)
+    // Array que salva se um vértice já foi visitado na contagem de 
+    // descendentes
+    boolean visited[T.numEdges()]
 
     // Pra cada vértice v_i em T
     for (v_i = 0; v_i < n; v_i += 1){
         // Se v_i não estiver em L1
         if (!elementInList(obj_UN, L1, v_i)){
+            // Setando array para falso em todas as posições
+            for (int i = 0; i < T.numEdges(); i++) {
+                visited[i] = false
+            }
+
             // Contamos seus descendentes
-            array visited = boolean[T.numEdges()]
             visited[v_i] = true
-            numDescendants = countDescendants(v_i, T, L1, U, visited)
+            numDescendants = countDescendants(v_i, T, L1, obj_UN, visited)
 
             // Se tiver número ímpar de descendentes adicionamos em v2
             if (numDescendants % 2 == 1) {
@@ -159,10 +165,12 @@ function countAncestors(v, T, L, U) {
     // Subindo pela árvore até a raiz (enquanto nao acharmos um vértice
     // sem pai)
     while (v != T.parent[v]) {
-        v = T.parent[v]
+        // Se estiver em um ancestral e ele estiver na lista
         if (elementInList(U, L, v)){
-            count++
+            // Incrementamos o contador
+            count += 1
         }
+        v = T.parent[v]
     }
 
     return count
@@ -181,15 +189,14 @@ function createL2v2(T, L1, L2) {
     // L2 = Lista com os vértices de acordo com as restrições
     
     LinkedList L2 = L1 // As duas listas começam iguais
-    int n = len(T) // Quantidade de elementos no grafo
 
     // Cria estrutura union_find pra otimizar verificação
-    unionFind obj_UN = unionFind(n)
+    unionFind obj_UN = unionFind(T.numEdges())
     // E coloca todos os elementos da lista no mesmo grupo
     addListToUN(obj_UN, L1)
 
     // Pra cada v em T
-    for (v = 0; v < n; v += 1){
+    for (v = 0; v < T.numEdges(); v += 1){
         // Se v não estiver em L2
         if (!vertexInList(obj_UN, L1, v)){
             // Conta ancestrais
@@ -228,6 +235,7 @@ function countOlderCousins(preOrder, v_i, L) {
 
     // Para cada v_j em L
     while (v_i) {
+        // v_j é primo mais velho se preOrder[v_j] > preOrder[v_i]
         if preOrder[v_j] > preOrder[v_i] {
             count += 1
         }
@@ -256,28 +264,28 @@ function createL2v3(T, L1) {
 
     // Criando e preenchendo estrutura union-find para otimizar operações
     // de verificação de pertencimento
-    UnionFind obj_UN = UnionFind(T.numEdges)
+    UnionFind obj_UN = UnionFind(T.numEdges())
     addListToUN(obj_UN, L1)
 
     // Calculando DFS do grafo começando pela mesma raiz da árvore radicada
     // Encontrando raiz da árvore
     int root = getRootOfTree(T)
     // Calculando DFS começando pela mesma raiz
-    int preOrder[T.numEdges]
+    int preOrder[T.numEdges()]
     T.dfs(root, preOrder)
 
     // Para cada v_i na árvore
-    for (int v_i = 0; v_i < T.numEdges; v_i += 1) {
+    for (int v_i = 0; v_i < T.numEdges(); v_i += 1) {
         // Se v_i já estiver na lista, o ignoramos
         if(elementInList(obj_UN, L1, v_i)){
             continue
         }
 
         // Contando primos mais velhos em L2
-        countOlderCousins(preOrder, v_i, L2)
+        int countCousins = countOlderCousins(preOrder, v_i, L2)
 
         // Se tivemros número ímpar adicionamos em L2
-        if (countOlderCousins % 2 == 1) {
+        if (countCousins % 2 == 1) {
             L2.append(v_i)
         }
     }
