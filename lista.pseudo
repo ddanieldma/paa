@@ -299,7 +299,7 @@ function createL2v3(T, L1) {
 // Função que, dados dois vértices `v_1` e `v_2` e o comprimento `pathLen`
 // do caminho entre eles, retorna vetor com sequência de vértices que 
 // define o caminho C começado em `v_1` e terminado em `v_2`
-function caminhoVertices(v1, v2, parent, pathLen) {
+function pathVertices(v1, v2, parent, pathLen) {
     // Array que armazena caminho
     int path[pathLen]
     
@@ -319,7 +319,7 @@ function caminhoVertices(v1, v2, parent, pathLen) {
     return path
 }
 
-function caminhoMinimoLista(G, L) {
+function minimalPathList(G, L) {
     // Função que cria menor caminho que passa por todos os vértices de L
     // em ordem.
     // 
