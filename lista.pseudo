@@ -299,19 +299,22 @@ function createL2v3(T, L1) {
 // Função que, dados dois vértices `v_1` e `v_2` e o comprimento `pathLen`
 // do caminho entre eles, retorna vetor com sequência de vértices que 
 // define o caminho C começado em `v_1` e terminado em `v_2`
-function caminhoVertices(v1, v2, pathLen) {
+function caminhoVertices(v1, v2, parent, pathLen) {
     // Array que armazena caminho
     int path[pathLen]
     
-    // Começando caminho em v1
-    path[0] = v1
+    // Começando por v2 (pois vamos subir até v1)
+    int currentVertex = v2
+    int index = pathlen - 1
 
-    // Preenchendo caminho
-    for (int i = 1; i < pathLen; i += 1) {
-        // Vamos para o pai do último vértice e o colocamos no caminho
-        v1 = parent[v1]
-        path[i] = v1
+    // Percorrendo caminho
+    while (currentVertex != v1) {
+        path[index--] = currentVertex
+        currentVertex = parent[currentVertex]
     }
+
+    // Colocando v1 no começo do caminho
+    path[index] = v1
 
     return path
 }
@@ -330,8 +333,8 @@ function caminhoMinimoLista(G, L) {
     // Lista com caminhos minimos
     LinkedList minimalPath 
 
-    // Para
-    for (int vertex = 0; vertex < G.numEdges() - 1; vertex += 1) {
+    // Para cada vértice no grafo
+    for (int vertex = 0; vertex < len(L) - 1; vertex += 1) {
         // Definindo começo e fim do caminho
         int start = L[vertex]
         int goal = L[vertex + 1]
@@ -343,8 +346,7 @@ function caminhoMinimoLista(G, L) {
 
         // Calculando menor caminho para os dois vértices atuais e adici
         // onando na lista
-        currentPath = caminhoVertices(start, goal, distance[goal])
-        minimalPath.append(currentPath)
+        minimalPath.append(caminhoVertices(start, goal, parent, distance[goal]))
     }
 
     return minimalPath
