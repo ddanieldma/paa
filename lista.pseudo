@@ -60,12 +60,10 @@ function addListToUN(U, L) {
 // junto definido pela lista tem como representante o primeiro elemento 
 // da lista
 function elementInList(U, L, x) {
-    // Se x pertence ao mesmo grupo dos itens na lista verdadeiro. Caso
-    // contrário, falso
     U.find(x) == L[0]
 }
 
-// == Questão 1 == TODO: verificar também os elementos que já foram adicionados na lista
+// == Questão 1 ==
 // Dado um grafo G = (V, E), uma árvore radicada T de G produzida por uma
 // varredura, uma lista L1 contendo vértices dessa árvore, escreva três
 // algoritmos que retornem uma lista L2 contendo vértices de forma que 
@@ -176,7 +174,7 @@ function countAncestors(v, T, L, U) {
     return count
 }
 
-function createL2v2(T, L1, L2) {
+function createL2v2(T, L1) {
     // Função que cria L2 com vértices de T da seguinte forma:
     // Os vértices estão em L1 ou tem um número ímpar de descendentes em
     // L2.
